@@ -78,6 +78,8 @@ std::vector<std::bitset<32>> SHA256::codeMsgBlock(std::vector<std::bitset<32>> m
 }
 
 std::vector<std::string> SHA256::divideIntoBlocks(std::string msg) {
+    // TODO: optimise function
+
     if (msg.length() >= 55) {
         int str_size = int(msg.length());
         int AMOUNT_OF_BLOCKS = (msg.length() / 55)+1;
