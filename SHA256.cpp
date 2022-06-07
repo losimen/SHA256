@@ -5,7 +5,7 @@
 #include "SHA256.h"
 
 
-std::string SHA256::msgToBinary(const std::string &toConvert) {
+std::string SHA256::msgToBinary(const std::string toConvert) {
     std::string result;
 
     for (std::size_t i = 0; i < toConvert.size(); ++i)
@@ -16,7 +16,7 @@ std::string SHA256::msgToBinary(const std::string &toConvert) {
     return result;
 }
 
-std::string SHA256::paddingMsg(const std::string &msg) const {
+std::string SHA256::paddingMsg(const std::string msg) {
     std::string msgBinary = msgToBinary(msg);
     unsigned long msgLength = msgBinary.length();
 
@@ -30,12 +30,32 @@ std::string SHA256::paddingMsg(const std::string &msg) const {
     return msgBinary;
 }
 
-std::string SHA256::codeMsg(const std::string &msg) {
+std::string SHA256::codeMsg(const std::string msg) {
+    std::vector<std::string> msgBlocks = divideIntoBlocks(msg);
+
+    const std::vector<std::bitset<32>> constants = getConstants();
+    std::vector<std::bitset<32>> registers = getRegisters();
+
+    for (const auto& msgBlock: msgBlocks)
+    {
+        std::vector<std::bitset<32>> msgSchedule = getMsgSchedule(paddingMsg(msgBlock));
+        registers = codeMsgBlock(msgSchedule, constants, registers);
+    }
+
     std::string result;
 
-    std::vector<std::bitset<32>> msgSchedule = getMsgSchedule(paddingMsg(msg));
-    std::vector<std::bitset<32>> constants = getConstants();
-    std::vector<std::bitset<32>> registers = getRegisters();
+    for (auto el: registers) {
+        std::stringstream res;
+        res << std::hex << std::uppercase << el.to_ulong();
+        result += res.str();
+    }
+
+    return result;
+}
+
+std::vector<std::bitset<32>> SHA256::codeMsgBlock(std::vector<std::bitset<32>> msgSchedule,
+                                                  const std::vector<std::bitset<32>> &constants,
+                                                   std::vector<std::bitset<32>> registers) {
 
     for (int iteration = 0; iteration < 64; iteration++) {
         unsigned long long W = msgSchedule[iteration].to_ullong();
@@ -54,22 +74,33 @@ std::string SHA256::codeMsg(const std::string &msg) {
         registers[letters::e] = registers[letters::e].to_ullong() + T1;
     }
 
-
-    for (auto el: registers) {
-        std::stringstream res;
-        res << std::hex << std::uppercase << el.to_ulong();
-
-        result += res.str();
-    }
-
-    return result;
+    return registers;
 }
 
+std::vector<std::string> SHA256::divideIntoBlocks(std::string msg) {
+    if (msg.length() >= 55) {
+        int str_size = int(msg.length());
+        int AMOUNT_OF_BLOCKS = (msg.length() / 55)+1;
+        int part_size = str_size / AMOUNT_OF_BLOCKS;
 
-std::vector<std::bitset<32>>
-SHA256::codeMsgBlock(std::vector<std::bitset<32>> msgSchedule, std::vector<std::bitset<32>> constants,
-                     std::vector<std::bitset<32>> registers) {
-    return std::vector<std::bitset<32>>();
+        std::vector<std::string> msgBlocks_(AMOUNT_OF_BLOCKS + 1, std::string());
+
+        auto index = msgBlocks_.begin();
+
+        for (int iteration = 0; iteration < str_size; iteration++) {
+            if (iteration % part_size == 0)
+                index++;
+
+            (*index).push_back(msg[iteration]);
+        }
+
+        msgBlocks_.erase(msgBlocks_.begin());
+        return msgBlocks_;
+    } else {
+        std::vector<std::string> msgBlocks_;
+        msgBlocks_.push_back(msg);
+        return msgBlocks_;
+    }
 }
 
 
@@ -97,9 +128,9 @@ std::vector<std::bitset<32>> SHA256::getMsgSchedule(std::string str) {
 
     for (int i = 0; i < 64; i++)
         msgResult[i+16] = std::bitset<32>(sigma1(msgResult[i+14]).to_ullong() +
-                                             msgResult[i+9].to_ullong() +
-                                             sigma0(msgResult[i+1]).to_ullong() +
-                                             msgResult[i].to_ullong());
+                                          msgResult[i+9].to_ullong() +
+                                          sigma0(msgResult[i+1]).to_ullong() +
+                                          msgResult[i].to_ullong());
 
     return msgResult;
 }
@@ -206,7 +237,7 @@ std::vector<std::bitset<32>> SHA256::getConstants() {
     return vec;
 }
 
-std::bitset<32> SHA256::fractionToBinary(const double &t) {
+std::bitset<32> SHA256::fractionToBinary(const double t) {
     std::ostringstream os;
     os << std::setprecision(17) << t;
     std::string s = os.str();

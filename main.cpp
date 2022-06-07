@@ -3,7 +3,11 @@
 
 int main() {
     SHA256 a;
-    std::cout << a.codeMsg("abvjgnvgnjnjvgnjvgjjjnjjjcgvjgjjnvgnjgvnjgnjvjngggjjggj");
-    // 48EE8E0976DEACE8531423A881398A9FD3684E9514857DC87303CBA6467E925
+    std::cout << "Hello:        " << a.codeMsg("Hello") << std::endl;
+
+    std::cout << "How are you?: " << a.codeMsg("How are you?") << std::endl;
+    std::cout << "How are yOu?: " << a.codeMsg("How are yOu?") << std::endl;
+    std::cout << "How Are you?: " << a.codeMsg("How Are you?") << std::endl;
+
     return 0;
 }
