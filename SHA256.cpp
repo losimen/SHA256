@@ -43,11 +43,18 @@ std::string SHA256::codeMsg(const std::string msg) {
     }
 
     std::string result;
+    std::string temp;
 
     for (auto el: registers) {
         std::stringstream res;
         res << std::hex << std::uppercase << el.to_ulong();
-        result += res.str();
+        temp = res.str();
+
+        while (temp.length() != 8) {
+            temp = "0" + temp;
+        }
+
+        result += temp;
     }
 
     return result;
@@ -82,7 +89,7 @@ std::vector<std::string> SHA256::divideIntoBlocks(std::string msg) {
 
     if (msg.length() >= 55) {
         int str_size = int(msg.length());
-        int AMOUNT_OF_BLOCKS = (msg.length() / 55)+1;
+        int AMOUNT_OF_BLOCKS = (str_size / 55)+1;
         int part_size = str_size / AMOUNT_OF_BLOCKS;
 
         std::vector<std::string> msgBlocks_(AMOUNT_OF_BLOCKS + 1, std::string());

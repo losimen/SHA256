@@ -3,6 +3,7 @@
 
 int main() {
     SHA256 a;
+    std::cout << "abc:          " << a.codeMsg("abc") << std::endl;
     std::cout << "Hello:        " << a.codeMsg("Hello") << std::endl;
 
     std::cout << "How are you?: " << a.codeMsg("How are you?") << std::endl;
