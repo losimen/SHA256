@@ -112,7 +112,6 @@ std::vector<std::string> SHA256::divideIntoBlocks(std::string msg) {
     }
 }
 
-
 std::vector<std::bitset<32>> SHA256::getMsgSchedule(std::string str) {
     int str_size = int(str.length());
     int part_size = str_size / AMOUNT_OF_MESSAGES;
@@ -135,11 +134,12 @@ std::vector<std::bitset<32>> SHA256::getMsgSchedule(std::string str) {
     for(int i = 0; i < AMOUNT_OF_MESSAGES; i++)
         msgResult[i] = std::bitset<32>(msgSchedule[i]);
 
-    for (int i = 0; i < 64; i++)
+    for (int i = 0; i < 48; i++)
         msgResult[i+16] = std::bitset<32>(sigma1(msgResult[i+14]).to_ullong() +
                                           msgResult[i+9].to_ullong() +
                                           sigma0(msgResult[i+1]).to_ullong() +
                                           msgResult[i].to_ullong());
+
 
     return msgResult;
 }

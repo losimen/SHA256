@@ -12,16 +12,15 @@
 #include <cmath>
 #include <sstream>
 #include <iomanip>
+#include <algorithm>
 
+enum letters { a, b, c, d, e, f, g, h};
+const int LENGTH_OF_MSG = 448;
+const int AMOUNT_OF_MESSAGES = 16;
+const std::vector<int> prime {2, 3, 5, 7, 11, 13, 17, 19, 23, 29, 31, 37, 41, 43, 47, 53, 59, 61, 67, 71, 73, 79, 83, 89, 97, 101, 103, 107, 109, 113, 127, 131, 137, 139, 149, 151, 157, 163, 167, 173, 179, 181, 191, 193, 197, 199, 211, 223, 227, 229, 233, 239, 241, 251, 257, 263, 269, 271, 277, 281, 283, 293, 307, 311};
 
 class SHA256 {
 private:
-    enum letters { a, b, c, d, e, f, g, h};
-
-    static const int LENGTH_OF_MSG = 448;
-    static const int AMOUNT_OF_MESSAGES = 16;
-    const std::vector<int> prime {2, 3, 5, 7, 11, 13, 17, 19, 23, 29, 31, 37, 41, 43, 47, 53, 59, 61, 67, 71, 73, 79, 83, 89, 97, 101, 103, 107, 109, 113, 127, 131, 137, 139, 149, 151, 157, 163, 167, 173, 179, 181, 191, 193, 197, 199, 211, 223, 227, 229, 233, 239, 241, 251, 257, 263, 269, 271, 277, 281, 283, 293, 307, 311};
-
     std::vector<std::string> divideIntoBlocks(std::string msg);
 
     std::bitset<32> fractionToBinary(const double t);
@@ -51,7 +50,6 @@ private:
                                               std::vector<std::bitset<32>> registers);
 public:
     std::string codeMsg(const std::string msg);
-
 };
 
 
