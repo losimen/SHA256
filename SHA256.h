@@ -21,35 +21,34 @@ const std::vector<int> prime {2, 3, 5, 7, 11, 13, 17, 19, 23, 29, 31, 37, 41, 43
 
 class SHA256 {
 private:
-    std::vector<std::string> divideIntoBlocks(std::string msg);
+    static std::vector<std::string> divideIntoBlocks(std::string msg);
 
-    std::bitset<32> fractionToBinary(const double t);
-    std::string msgToBinary(const std::string toConvert);
+    static std::string msgToBinary(const std::string& toConvert);
 
-    std::string paddingMsg(const std::string msg);
+    static std::string paddingMsg(const std::string& msg);
 
     // operations;
-    inline uint32_t rotr32 (uint32_t n, unsigned int c);
+    static inline uint32_t rotr32 (uint32_t n, unsigned int c);
 
     // functions
-    std::bitset<32> sigma0(std::bitset<32> bitToUse);
-    std::bitset<32> sigma1(std::bitset<32> bitToUse);
+    static std::bitset<32> sigma0(std::bitset<32> bitToUse);
+    static std::bitset<32> sigma1(std::bitset<32> bitToUse);
 
-    std::bitset<32> sum0(std::bitset<32> bitToUse);
-    std::bitset<32> sum1(std::bitset<32> bitToUse);
+    static std::bitset<32> sum0(std::bitset<32> bitToUse);
+    static std::bitset<32> sum1(std::bitset<32> bitToUse);
 
-    std::bitset<32> ch(std::bitset<32> x, std::bitset<32> y, std::bitset<32> z);
-    std::bitset<32> maj(std::bitset<32> x, std::bitset<32> y, std::bitset<32> z);
+    static std::bitset<32> ch(std::bitset<32> x, std::bitset<32> y, std::bitset<32> z);
+    static std::bitset<32> maj(std::bitset<32> x, std::bitset<32> y, std::bitset<32> z);
 
-    std::vector<std::bitset<32>> getConstants();
-    std::vector<std::bitset<32>> getMsgSchedule(std::string str);
-    std::vector<std::bitset<32>> getRegisters();
+    static std::vector<std::bitset<32>> getConstants();
+    static std::vector<std::bitset<32>> getMsgSchedule(std::string str);
+    static std::vector<std::bitset<32>> getRegisters();
 
-    std::vector<std::bitset<32>> codeMsgBlock(std::vector<std::bitset<32>> msgSchedule,
+    static std::vector<std::bitset<32>> codeMsgBlock(std::vector<std::bitset<32>> msgSchedule,
                                               const std::vector<std::bitset<32>> &constants,
                                               std::vector<std::bitset<32>> registers);
 public:
-    std::string codeMsg(const std::string msg);
+    static std::string codeMsg(const std::string& msg);
 };
 
 

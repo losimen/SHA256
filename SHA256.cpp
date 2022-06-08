@@ -5,7 +5,7 @@
 #include "SHA256.h"
 
 
-std::string SHA256::msgToBinary(const std::string toConvert) {
+std::string SHA256::msgToBinary(const std::string& toConvert) {
     std::string result;
 
     for (std::size_t i = 0; i < toConvert.size(); ++i)
@@ -16,7 +16,7 @@ std::string SHA256::msgToBinary(const std::string toConvert) {
     return result;
 }
 
-std::string SHA256::paddingMsg(const std::string msg) {
+std::string SHA256::paddingMsg(const std::string& msg) {
     std::string msgBinary = msgToBinary(msg);
     unsigned long msgLength = msgBinary.length();
 
@@ -30,7 +30,7 @@ std::string SHA256::paddingMsg(const std::string msg) {
     return msgBinary;
 }
 
-std::string SHA256::codeMsg(const std::string msg) {
+std::string SHA256::codeMsg(const std::string& msg) {
     std::vector<std::string> msgBlocks = divideIntoBlocks(msg);
 
     const std::vector<std::bitset<32>> constants = getConstants();
@@ -251,19 +251,9 @@ std::vector<std::bitset<32>> SHA256::getConstants() {
         0x748f82ee, 0x78a5636f, 0x84c87814, 0x8cc70208, 0x90befffa, 0xa4506ceb, 0xbef9a3f7, 0xc67178f2};
 
     for (auto number: constants)
-        vec.push_back(number);
+        vec.emplace_back(number);
 
     return vec;
-}
-
-std::bitset<32> SHA256::fractionToBinary(const double t) {
-    std::ostringstream os;
-    os << std::setprecision(17) << t;
-    std::string s = os.str();
-
-    std::string number = s.substr(s.find('.')+1);
-
-    return std::bitset<32>(std::stol(s.substr(s.find('.')+1)));
 }
 
 std::vector<std::bitset<32>> SHA256::getRegisters() {
