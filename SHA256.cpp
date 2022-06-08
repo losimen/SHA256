@@ -34,27 +34,26 @@ std::string SHA256::codeMsg(const std::string msg) {
     std::vector<std::string> msgBlocks = divideIntoBlocks(msg);
 
     const std::vector<std::bitset<32>> constants = getConstants();
-    std::vector<std::bitset<32>> registers = getRegisters();
+    const std::vector<std::bitset<32>> registersInitial = getRegisters();
+    std::vector<std::bitset<32>> registersToChange = registersInitial;
 
     for (const auto& msgBlock: msgBlocks)
     {
         std::vector<std::bitset<32>> msgSchedule = getMsgSchedule(paddingMsg(msgBlock));
-        registers = codeMsgBlock(msgSchedule, constants, registers);
+        registersToChange = codeMsgBlock(msgSchedule, constants, registersToChange);
     }
 
     std::string result;
     std::string temp;
 
-    for (auto el: registers) {
+    for (int i = 0; i < registersInitial.size(); i++)
+        registersToChange[i] = registersToChange[i].to_ullong() + registersInitial[i].to_ullong();
+
+    for (auto el: registersToChange) {
         std::stringstream res;
         res << std::hex << std::uppercase << el.to_ulong();
-        temp = res.str();
 
-        while (temp.length() != 8) {
-            temp = "0" + temp;
-        }
-
-        result += temp;
+        result += res.str();
     }
 
     return result;
@@ -174,21 +173,21 @@ std::bitset<32> SHA256::sigma1(std::bitset<32> bitToUse) {
 std::bitset<32> SHA256::sum1(std::bitset<32> bitToUse) {
     unsigned long long converted = bitToUse.to_ulong();
 
-    auto rotr_2 = std::bitset<32>(rotr32(converted, 2));
-    auto rotr_13 = std::bitset<32>(rotr32(converted, 13));
-    auto rotr_22 = std::bitset<32>(rotr32(converted, 22));
-
-    return (rotr_2 ^ rotr_13) ^ rotr_22;
-}
-
-std::bitset<32> SHA256::sum0(std::bitset<32> bitToUse) {
-    unsigned long long converted = bitToUse.to_ulong();
-
     auto rotr_6 = std::bitset<32>(rotr32(converted, 6));
     auto rotr_11 = std::bitset<32>(rotr32(converted, 11));
     auto rotr_25 = std::bitset<32>(rotr32(converted, 25));
 
     return (rotr_6 ^ rotr_11) ^ rotr_25;
+}
+
+std::bitset<32> SHA256::sum0(std::bitset<32> bitToUse) {
+    unsigned long long converted = bitToUse.to_ulong();
+
+    auto rotr_2 = std::bitset<32>(rotr32(converted, 2));
+    auto rotr_13 = std::bitset<32>(rotr32(converted, 13));
+    auto rotr_22 = std::bitset<32>(rotr32(converted, 22));
+
+    return (rotr_2 ^ rotr_13) ^ rotr_22;
 }
 
 std::bitset<32> SHA256::ch(std::bitset<32> x, std::bitset<32> y, std::bitset<32> z) {
@@ -251,7 +250,7 @@ std::vector<std::bitset<32>> SHA256::getConstants() {
         0x19a4c116, 0x1e376c08, 0x2748774c, 0x34b0bcb5, 0x391c0cb3, 0x4ed8aa4a, 0x5b9cca4f, 0x682e6ff3,
         0x748f82ee, 0x78a5636f, 0x84c87814, 0x8cc70208, 0x90befffa, 0xa4506ceb, 0xbef9a3f7, 0xc67178f2};
 
-    for (auto number: a)
+    for (auto number: constants)
         vec.push_back(number);
 
     return vec;
@@ -278,10 +277,5 @@ std::vector<std::bitset<32>> SHA256::getRegisters() {
             0x1f83d9ab,
             0x5be0cd19,
     };
-    std::vector<unsigned long long > a;
-
-    for (auto el: vec)
-        vec.push_back(el);
-
     return vec;
 }
